@@ -35,7 +35,6 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
     positionStream = Geolocator.getPositionStream().listen((event) {
       final position = event;
-      print(position);
       add(OnNewUserLocationEvent(
           LatLng(position.latitude, position.longitude)));
     });

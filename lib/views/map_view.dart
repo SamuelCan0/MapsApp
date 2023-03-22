@@ -5,41 +5,42 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_app/blocs/blocs.dart';
 
 class MapView extends StatelessWidget {
-
   final LatLng initialLocation;
+  final Set<Polyline> polylines;
 
-  const MapView({ 
-    Key? key, 
-    required this.initialLocation 
+  const MapView({
+    Key? key,
+    required this.initialLocation,
+    required this.polylines,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
     final mapBloc = BlocProvider.of<MapBloc>(context);
 
-    final CameraPosition initialCameraPosition = CameraPosition(
-        target: initialLocation,
-        zoom: 15
-    );
+    final CameraPosition initialCameraPosition =
+        CameraPosition(target: initialLocation, zoom: 15);
 
     final size = MediaQuery.of(context).size;
 
     return SizedBox(
       width: size.width,
       height: size.height,
-      child: GoogleMap(
-        initialCameraPosition: initialCameraPosition,
-        compassEnabled: false,
-        myLocationEnabled: true,
-        zoomControlsEnabled: false,
-        myLocationButtonEnabled: false,
+      child: Listener(
+        onPointerMove: (event) => mapBloc.add(OnStopFollowingUserEvent()),
+        child: GoogleMap(
+          initialCameraPosition: initialCameraPosition,
+          compassEnabled: false,
+          myLocationEnabled: true,
+          zoomControlsEnabled: false,
+          myLocationButtonEnabled: false,
+          polylines: polylines,
+          onMapCreated: (controller) =>
+              mapBloc.add(OnMapInitialzedEvent(controller)),
 
-        onMapCreated: ( controller ) => mapBloc.add( OnMapInitialzedEvent(controller) ),
-
-        // TODO: Markers
-        // TODO: polylines
-        // TODO: Cuando se mueve el mapa
+          // TODO: Markers
+          // TODO: Cuando se mueve el mapa
+        ),
       ),
     );
   }
